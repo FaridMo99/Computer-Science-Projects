@@ -1,0 +1,25 @@
+{
+  "name": "computer-science-projects",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier": "prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FaridMo99/Computer-Science-Projects.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/FaridMo99/Computer-Science-Projects/issues"
+  },
+  "homepage": "https://github.com/FaridMo99/Computer-Science-Projects#readme",
+  "devDependencies": {
+    "prettier": "^3.5.3"
+  }
+}
