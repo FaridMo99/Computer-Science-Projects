@@ -7,8 +7,8 @@ export default class LinkedList {
     const newNode = new Node(value);
 
     if (this.head === null) {
-        this.head = newNode;
-        return;
+      this.head = newNode;
+      return;
     }
 
     let currentNode = this.head;
@@ -17,7 +17,7 @@ export default class LinkedList {
       currentNode = currentNode.nextNode;
     }
 
-    currentNode.nextNode = newNode
+    currentNode.nextNode = newNode;
   }
 
   prepend(value) {
@@ -115,15 +115,15 @@ export default class LinkedList {
     let arrString = [];
 
     while (currentNode !== null) {
-        arrString.push(` ${currentNode.value.toString()} -> `)
+      arrString.push(` ${currentNode.value.toString()} -> `);
       currentNode = currentNode.nextNode;
     }
 
-    if(currentNode === null){
-        arrString.push("null")
+    if (currentNode === null) {
+      arrString.push("null");
     }
 
-    return arrString.join("")
+    return arrString.join("");
   }
 }
 
