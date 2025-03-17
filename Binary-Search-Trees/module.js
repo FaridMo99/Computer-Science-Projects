@@ -1,4 +1,4 @@
-import mergeSort from "../Recursion/mergeSort.js";
+import mergeSortAndRemoveDupes from "../Recursion/mergeSort.js";
 
 export class Node {
   constructor(value) {
@@ -8,72 +8,195 @@ export class Node {
   }
 }
 
-export class Tree {
-  constructor(array) {
-    this.array = buildTree(array);
-    this.root = this.array[Math.floor(this.array.length / 2)];
+export default class Tree {
+  constructor(root) {
+    this.root = buildTree(root);
   }
 
-  insert(value) {}
+  insert(value) {
+    const insertRecursively = (root, value) => {
+      if (!root) return new Node(value);
+
+      if (value < root.value) {
+        root.left = insertRecursively(root.left, value);
+      } else if (value > root.value) {
+        root.right = insertRecursively(root.right, value);
+      }
+
+      return root;
+    };
+
+    this.root = insertRecursively(this.root, value);
+  }
 
   deleteItem(value) {
-    //You’ll have to deal with several cases for delete, such as when a node has children or not.
-    // If you need additional resources, check out these two articles on inserting and deleting,
-    // or this video on BST inserting/removing with several visual examples.
+    const deleteNode = (root, value) => {
+      if (!root) return root;
+
+      if (value < root.value) {
+        root.left = deleteNode(root.left, value);
+      } else if (value > root.value) {
+        root.right = deleteNode(root.right, value);
+      } else {
+        if (!root.left) return root.right;
+        if (!root.right) return root.left;
+
+        root.value = this.minValue(root.right);
+        root.right = deleteNode(root.right, root.value);
+      }
+
+      return root;
+    };
+
+    this.root = deleteNode(this.root, value);
+  }
+
+  minValue(root) {
+    let current = root;
+    while (current.left) current = current.left;
+    return current.value;
   }
 
   levelOrder(callback) {
-    //levelOrder should traverse the tree in breadth-first level order and call the callback on each node as it traverses,
-    // passing the whole node as an argument, similarly to how Array.prototype.forEach might work for arrays.
-    // levelOrder may be implemented using either iteration or recursion (try implementing both!).
-    // If no callback function is provided, throw an Error reporting that a callback is required.
-    // Tip: You will want to use an array acting as a queue to keep track of all the child nodes that you have yet to traverse
-    // and to add new ones to the list (video on level order traversal).
+    if (typeof callback !== "function") {
+      throw new Error("No Callback passed");
+    }
+
+    if (!this.root) return;
+
+    let queue = [this.root];
+
+    while (queue.length > 0) {
+      let node = queue.shift();
+      callback(node);
+
+      if (node.left) queue.push(node.left);
+      if (node.right) queue.push(node.right);
+    }
   }
 
   inOrder(callback) {
-    // Each of these functions should traverse the tree in their respective depth-first order and pass each node to the provided callback.
-    // The functions should throw an Error if no callback is given as an argument, like with levelOrder.
+    if (typeof callback !== "function") {
+      throw new Error("No Callback passed");
+    }
+
+    const traverseInOrder = (node) => {
+      if (node) {
+        traverseInOrder(node.left);
+        callback(node);
+        traverseInOrder(node.right);
+      }
+    };
+
+    traverseInOrder(this.root);
   }
+
   preOrder(callback) {
-    // Each of these functions should traverse the tree in their respective depth-first order and pass each node to the provided callback.
-    // The functions should throw an Error if no callback is given as an argument, like with levelOrder.
+    if (typeof callback !== "function") {
+      throw new Error("No Callback passed");
+    }
+
+    const traversePreOrder = (node) => {
+      if (node) {
+        callback(node);
+        traversePreOrder(node.left);
+        traversePreOrder(node.right);
+      }
+    };
+
+    traversePreOrder(this.root);
   }
+
   postOrder(callback) {
-    // Each of these functions should traverse the tree in their respective depth-first order and pass each node to the provided callback.
-    // The functions should throw an Error if no callback is given as an argument, like with levelOrder.
+    if (typeof callback !== "function") {
+      throw new Error("No Callback passed");
+    }
+
+    const traversePostOrder = (node) => {
+      if (node) {
+        traversePostOrder(node.left);
+        traversePostOrder(node.right);
+        callback(node);
+      }
+    };
+
+    traversePostOrder(this.root);
   }
 
   find(value) {
-    //Write a find(value) function that returns the node with the given value.
+    let current = this.root;
+    while (current) {
+      if (value < current.value) {
+        current = current.left;
+      } else if (value > current.value) {
+        current = current.right;
+      } else {
+        return current;
+      }
+    }
+    return null;
   }
 
   height(node) {
-    //returns the given node’s height. Height is defined as the number of edges in the longest path from a given node to a leaf node.
+    if (!node) return -1;
+    return 1 + Math.max(this.height(node.left), this.height(node.right));
   }
 
   depth(node) {
-    //that returns the given node’s depth. Depth is defined as the number of edges in the path from a given node to the tree’s root node.
+    let current = this.root;
+    let depth = 0;
+    while (current !== null) {
+      if (node.value < current.value) {
+        current = current.left;
+        depth++;
+      } else if (node.value > current.value) {
+        current = current.right;
+        depth++;
+      } else {
+        return depth;
+      }
+    }
+    return -1;
   }
 
   isBalanced() {
-    //checks if the tree is balanced.
-    // A balanced tree is one where the difference between heights of the left subtree and the right subtree of every node is not more than 1.
+    const checkBalance = (node) => {
+      if (!node) return true;
+
+      const leftHeight = this.height(node.left);
+      const rightHeight = this.height(node.right);
+
+      return (
+        Math.abs(leftHeight - rightHeight) <= 1 &&
+        checkBalance(node.left) &&
+        checkBalance(node.right)
+      );
+    };
+
+    return checkBalance(this.root);
   }
 
   rebalance() {
-    //that rebalances an unbalanced tree. Tip: You’ll want to use a traversal method to provide a new array to the buildTree function.
+    const nodes = [];
+
+    this.inOrder((node) => {
+      nodes.push(node.value);
+    });
+
+    this.root = buildTree(nodes);
   }
 }
 
 export function buildTree(array) {
-  const sortedArray = mergeSort(array);
+  const sortedArray = mergeSortAndRemoveDupes(array);
 
-  //remove dupes
-  for (let i = sortedArray.length - 1; i > 0; i--)
-    if (sortedArray[i] === sortedArray[i - 1]) {
-      sortedArray.splice(i, 1);
-    }
+  if (sortedArray.length === 0) return null;
 
-  return sortedArray;
+  const mid = Math.floor(sortedArray.length / 2);
+  const root = new Node(sortedArray[mid]);
+
+  root.left = buildTree(sortedArray.slice(0, mid));
+  root.right = buildTree(sortedArray.slice(mid + 1));
+
+  return root;
 }

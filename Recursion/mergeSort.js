@@ -1,4 +1,4 @@
-export default function mergeSort(arr) {
+function mergeSort(arr) {
   if (arr.length <= 1) return arr;
   const middle = Math.floor(arr.length / 2);
 
@@ -24,4 +24,15 @@ function merge(left, right) {
   }
 
   return result.concat(left.slice(leftIndex), right.slice(rightIndex));
+}
+
+export default function mergeSortAndRemoveDupes(arr) {
+  const sortedArray = mergeSort(arr);
+  //remove dupes
+  for (let i = sortedArray.length - 1; i > 0; i--)
+    if (sortedArray[i] === sortedArray[i - 1]) {
+      sortedArray.splice(i, 1);
+    }
+
+  return sortedArray;
 }
